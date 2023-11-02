@@ -1,0 +1,45 @@
+4. Local Docker Registry Setup
+
+
+          Run this dockerfile with this configuration.
+         You can access the registry on your localhost at http://localhost:5000/v2/_catalog
+
+
+
+
+version: '3'
+
+
+services:
+  registry:
+    restart: always
+    image: registry:2
+    ports:
+    - "5000:5000"
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+    volumes:
+      - ./data:/data
+      - ./auth:/auth
+
+
+
+
+
+
+
+
+
+
+1. Steps to Push Image on registry:-
+
+
+
+
+                i)  docker login reg.ancrypto.com 
+                           ( as specified in the nginx conf file for registry)
+                ii) docker build -t  reg.ancrypto.com/imagename
+                 ii) docker push reg.ancrypto.com/imagename

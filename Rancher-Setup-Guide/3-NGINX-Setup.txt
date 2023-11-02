@@ -1,0 +1,130 @@
+3. NGINX Setup
+
+
+We are using nginx for load balancing and as an ingress for our Rancher cluster.
+
+
+Firstly install nginx on machine 1.
+1. sudo apt install nginx -y
+2. sudo systemctl enable ngnix
+3. sudo systemctl start ngnix
+
+
+
+
+
+
+
+
+
+
+1. NGINX Configurations for routing and Load Balancing:-
+
+
+We are using an upstream backend parameter inside the nginx configuration file to distribute the request coming to nginx to other nodes through the network.
+Also, we have redirected the http requests to https by adding ssl certificates path in the configuration file.
+
+
+
+
+upstream backend {
+        server 192.168.10.7:30000;
+        server 192.168.10.8:30000;
+        server 192.168.10.9:30000;
+        # Add more backend servers as needed
+    }
+
+
+server {
+    server_name api-ancrypto.staging-host.com;
+        
+    location / {
+            rewrite /(.*) /$1 break;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+                proxy_pass http://backend;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. NGINX Configurations for Docker Local Registry:-
+
+
+
+
+server {
+    allow all;
+    server_name reg.ancrypto.com;
+
+
+    location /v2 {
+           # rewrite /(.*) /$1 break;
+        proxy_http_version 1.1;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host      $http_host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+       proxy_cache_bypass $http_upgrade;
+#                proxy_pass http://172.16.14.161:5000;
+                proxy_pass http://localhost:5000;
+
+
+    }
+
+
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/reg.ancrypto.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/reg.ancrypto.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+
+
+
+server {
+    if ($host = reg.ancrypto.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+
+
+    server_name reg.ancrypto.com;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+
+
+}

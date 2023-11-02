@@ -1,0 +1,25 @@
+6. Restore Strategy 
+
+
+Stop the container currently running Rancher Server on which you want to restore the data.
+
+
+
+
+1. docker stop <RANCHER_CONTAINER_NAME>
+
+
+2. Enter the following command to delete your current state data and replace it with your backup data that you took.
+
+
+docker run  --volumes-from <RANCHER_CONTAINER_NAME> -v $PWD:/backup \
+busybox sh -c "rm /var/lib/rancher/* -rf  && \
+tar pzxvf /backup/rancher-data-backup-<RANCHER_VERSION>-<DATE>.tar.gz"
+
+
+
+
+3. Restart your Rancher Server container, replacing the placeholder. It will restart using your backup data.
+
+
+docker start <RANCHER_CONTAINER_NAME>

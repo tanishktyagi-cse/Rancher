@@ -1,0 +1,32 @@
+2. Cluster Setup
+
+
+1. Login to Rancher dashboard and go to create a cluster.
+2. Select custom with rke2 option enabled .
+3. Give a name to the cluster. For ex: demo
+4. Select kubernetes version v1.25.12 + rke2r1.
+5. Create a cluster with a private container registry with a username and password otherwise you cannot edit it after the cluster is being made.
+6. Click create to add the cluster.
+
+
+
+
+
+
+Setting up machines/nodes
+
+
+1. Go to the cluster and select registration tab over there
+2. Step 1:There you can choose what roles you want to assign to the node for ex- control plane, worker node, etcd. You can assign all the roles to a node at once also. In our case we are selecting all the roles.
+3. Step 2: You need to enable the insecure mode and copy the following command from there.
+4. You need to run this command on the machine you want to assign as a node for your cluster.
+5. After running the command you can check the progress in the machine and provision logs tab in the rancher UI by selecting the cluster.
+
+
+
+
+
+
+
+
+Failover :  In case any node fails, we can register new nodes in the cluster by the above command.

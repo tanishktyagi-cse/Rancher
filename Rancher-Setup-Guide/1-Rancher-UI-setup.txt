@@ -1,0 +1,41 @@
+1. Rancher UI Setup
+
+
+Prerequisite: You can avoid these steps if you have already setted up docker. 
+
+
+1. sudo apt update
+2. sudo apt install docker.io
+3. sudo usermod -aG docker <user>
+
+
+We have used docker-compose file to run the rancher :-
+
+
+version: '2'
+services:
+  rancher:
+    image: 'rancher/rancher'
+    restart: unless-stopped
+    container_name: Rancher
+    privileged: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - rancher_data:/var/lib/rancher
+      - kubelet_data:/var/lib/kubelet
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+ 
+4. docker run -d --restart=unless-stopped  -p 80:80 -p 443:443  --privileged rancher/rancher:latest
+5. Docker logs -f <container_name> 
+6. Copy bootstrap password from logs 
+7. Copy the link to the dashboard and go to the link
+8. Paste the password here and create a new user and password(must be 15 words).

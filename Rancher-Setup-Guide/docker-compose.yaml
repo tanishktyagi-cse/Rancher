@@ -1,0 +1,21 @@
+version: '2'
+services:
+  rancher:
+    image: 'rancher/rancher'
+    restart: unless-stopped
+    container_name: Rancher
+    privileged: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - rancher_data:/var/lib/rancher
+      - kubelet_data:/var/lib/kubelet
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
